@@ -5,7 +5,7 @@
 * Daniel Kurniawan 05111640000081
 
 ## Tugas 4
-###Protocol
+### Protocol
 Old Protocol:
 * Login: auth [username] [password]
 * Send message: send [username-recipient] [message]
