@@ -11,4 +11,12 @@
 * Send message: send [username-recipient] [message]
 * Inbox: inbox
 #### New Protocol
-* Logout: out [username]
+* Logout: logout 
+* Create group: create_group [groupname]
+* Join group: join_group [groupname]
+* Leave group: leave_group [groupname]
+* Getting group list: list_group
+* Getting user's group list: list_mygroup
+* Getting group members list: list_members [groupname]
+* Send message to group: send_group [groupname] [message]
+* Inbox of a group: inbox_group [groupname]
