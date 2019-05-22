@@ -40,6 +40,10 @@ class ChatClient:
             elif (command == 'join_group'):
                 group = j[1].strip()
                 return self.join_group(group)
+            elif (command == 'leave_group'):
+                group = j[1].strip()
+                return self.leave_group(group)
+                
 	    else:
              "*Maaf, command tidak benar"
 	except IndexError:
@@ -135,6 +139,17 @@ class ChatClient:
             return "Success join group {}" . format(group)
         else:
             return "Error, {}" . format(result['message'])
+        
+    def leave_group(self, group):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="leave_group {} {}\r\n" . format(group, self.tokenid)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "Success leave group {}" . format(group)
+        else:
+            return "Error, {}" . format(result['message'])
+
 
 if __name__=="__main__":
     cc = ChatClient()
