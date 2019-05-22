@@ -52,6 +52,9 @@ class ChatClient:
             elif (command=='inbox_group'):
                 group = j[1].strip()
                 return self.inbox_group(group)
+            elif (command=='list_members'):
+                group = j[1].strip()
+                return self.list_members(group)            
 	    else:
              "*Maaf, command tidak benar"
 	except IndexError:
@@ -177,6 +180,19 @@ class ChatClient:
             return "{}" . format(json.dumps(result['messages']))
         else:
             return "Error, {}" . format(result['message'])
+        
+    def list_members(self, group):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="list_members {} {}\r\n" . format(self.tokenid, group)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "{}" . format(json.dumps(result['messages']))
+        else:
+            return "Error, {}" . format(result['message'])       
+    
+        
+        
 
 if __name__=="__main__":
     cc = ChatClient()

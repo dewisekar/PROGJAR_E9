@@ -81,6 +81,13 @@ class Chat:
                 username = self.sessions[sessionid]['username']
                 print "Inbox group {}".format(group)
                 return self.inbox_group(group, username)
+            elif (command == 'list_members'):
+                sessionid = j[1].strip()
+                group = j[2].strip()                
+                username = self.sessions[sessionid]['username']
+                print "Getting group {} members".format(group)
+                return self.list_members(group, username)
+            
             else:
                 return {'status' : 'ERROR', 'message' : '**Protocol Tidak Benar'}
         except IndexError:
@@ -208,6 +215,19 @@ class Chat:
         for k in self.groups[group]['messages']:
             msgs.append(k)
         return {'status': 'OK', 'messages': msgs}  
+    
+    def list_members(self, group, username):
+        if(group not in self.groups):
+            return {'status': 'ERROR', 'message': 'Group tidak ada'}
+        if(username not in self.groups[group]['members']):
+            return {'status': 'ERROR', 'message': 'Anda bukan bagian dari grup'}
+        msgs = []
+        for k in self.groups[group]['members']:
+            msgs.append(k)
+        return {'status': 'OK', 'messages': msgs}     
+    
+        
+        
 if __name__=="__main__":
     j = Chat()
     sesi = j.proses("auth messi surabaya")
