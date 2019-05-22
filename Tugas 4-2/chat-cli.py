@@ -43,7 +43,15 @@ class ChatClient:
             elif (command == 'leave_group'):
                 group = j[1].strip()
                 return self.leave_group(group)
-                
+            elif (command=='send_group'):
+                groupto = j[1].strip()
+                message=""
+                for w in j[2:]:
+                    message="{} {}" . format(message,w)
+                return self.send_group(groupto, message)  
+            elif (command=='inbox_group'):
+                group = j[1].strip()
+                return self.inbox_group(group)
 	    else:
              "*Maaf, command tidak benar"
 	except IndexError:
@@ -149,7 +157,26 @@ class ChatClient:
             return "Success leave group {}" . format(group)
         else:
             return "Error, {}" . format(result['message'])
-
+        
+    def send_group(self,groupto="xxx",message="xxx"):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="send_group {} {} {} \r\n" . format(self.tokenid,groupto,message)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "message sent to {}" . format(groupto)
+        else:
+            return "Error, {}" . format(result['message'])
+        
+    def inbox_group(self, group):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="inbox_group {} {}\r\n" . format(group, self.tokenid)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "{}" . format(json.dumps(result['messages']))
+        else:
+            return "Error, {}" . format(result['message'])
 
 if __name__=="__main__":
     cc = ChatClient()

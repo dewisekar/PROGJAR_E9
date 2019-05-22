@@ -66,6 +66,21 @@ class Chat:
                 sessionid = j[2].strip()
                 print "{} leaves group {}".format(self.sessions[sessionid]['username'], group)
                 return self.leave_group(group, sessionid)
+            elif (command == 'send_group'):
+                sessionid = j[1].strip()
+                groupto = j[2].strip()
+                message = ""
+                for w in j[3:]:
+                    message = "{} {}" .format(message, w)
+                usernamefrom = self.sessions[sessionid]['username']
+                print "send message from {} to group {}" . format(usernamefrom, groupto)
+                return self.send_group(sessionid, usernamefrom, groupto, message)
+            elif (command == 'inbox_group'):
+                group = j[1].strip()
+                sessionid = j[2].strip()
+                username = self.sessions[sessionid]['username']
+                print "Inbox group {}".format(group)
+                return self.inbox_group(group, username)
             else:
                 return {'status' : 'ERROR', 'message' : '**Protocol Tidak Benar'}
         except IndexError:
@@ -84,6 +99,11 @@ class Chat:
         if(username not in self.users):
             return False
         return self.users[username]
+    
+    def get_group(self, groupname):
+        if(groupname not in self.groups):
+            return False
+        return self.groups[groupname]
     
     def send_message(self, sessionid, username_from, username_dest, message):
         if (sessionid not in self.sessions):
@@ -162,7 +182,32 @@ class Chat:
             else:
                 self.groups[group]['members'].remove(username)
                 return {'status': 'OK', 'message': self.groups[group]}
-
+            
+    def send_group(self, sessionid, username_from, group_dest, message):
+        if (sessionid not in self.sessions):
+            return {'status': 'ERROR', 'message': 'Session Tidak Ditemukan'}
+        s_to = self.get_group(group_dest)
+        
+        #grupnya gak ada
+        if (s_to == False):
+            return {'status': 'ERROR', 'message': 'User atau Group Tidak Ditemukan'}
+        #gakmasuk grup
+        if (username_from not in self.groups[group_dest]['members']):
+            return {'status': 'ERROR', 'message': 'Anda bukan member group ini'}
+        
+        messages = { 'from': username_from, 'msg': message }
+        self.groups[group_dest]['messages'].append(messages)
+        return {'status': 'OK', 'message': 'Message Sent'}
+    
+    def inbox_group(self, group, username):
+        if(group not in self.groups):
+            return {'status': 'ERROR', 'message': 'Group tidak ada'}
+        if(username not in self.groups[group]['members']):
+            return {'status': 'ERROR', 'message': 'Anda bukan bagian dari grup'}
+        msgs = []
+        for k in self.groups[group]['messages']:
+            msgs.append(k)
+        return {'status': 'OK', 'messages': msgs}  
 if __name__=="__main__":
     j = Chat()
     sesi = j.proses("auth messi surabaya")
