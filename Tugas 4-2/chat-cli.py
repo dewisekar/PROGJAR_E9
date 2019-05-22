@@ -37,6 +37,9 @@ class ChatClient:
                 return self.list_group()
             elif (command == 'list_mygroup'):
                 return self.list_mygroup()
+            elif (command == 'join_group'):
+                group = j[1].strip()
+                return self.join_group(group)
 	    else:
              "*Maaf, command tidak benar"
 	except IndexError:
@@ -82,6 +85,7 @@ class ChatClient:
             return "message sent to {}" . format(usernameto)
         else:
             return "Error, {}" . format(result['message'])
+
     def inbox(self):
         if (self.tokenid==""):
             return "Error, not authorized"
@@ -101,6 +105,7 @@ class ChatClient:
             return "group {} created" . format(group)
         else:
             return "Error, {}" . format(result['message'])
+
     def list_group(self):
         if (self.tokenid==""):
             return "Error, not authorized"
@@ -110,6 +115,7 @@ class ChatClient:
             return "{}" . format(json.dumps(result['messages']))
         else:
             return "Error, {}" . format(result['message'])
+
     def list_mygroup(self):
         if (self.tokenid==""):
             return "Error, not authorized"
@@ -119,6 +125,17 @@ class ChatClient:
             return "{}" . format(json.dumps(result['messages']))
         else:
             return "Error, {}" . format(result['message'])
+
+    def join_group(self, group):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="join_group {} {}\r\n" . format(group, self.tokenid)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "Success join group {}" . format(group)
+        else:
+            return "Error, {}" . format(result['message'])
+
 if __name__=="__main__":
     cc = ChatClient()
     while True:

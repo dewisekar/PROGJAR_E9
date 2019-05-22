@@ -56,6 +56,11 @@ class Chat:
                 username = self.sessions[sessionid]['username']
                 print "{}'s group list".format(username)
                 return self.list_mygroup(username)
+            elif (command =='join_group'):
+                group = j[1].strip()
+                sessionid = j[2].strip()
+                print "Join group {}".format(group)
+                return self.join_group(group, sessionid)
             else:
                 return {'status' : 'ERROR', 'message' : '**Protocol Tidak Benar'}
         except IndexError:
@@ -130,7 +135,18 @@ class Chat:
              if (username in self.groups[k]['members']):
                  msgs.append(self.groups[k]['nama'])
         return {'status': 'OK', 'messages': msgs}  
-
+    
+    def join_group(self, group, sessionid):
+        if(group not in self.groups):
+            return {'status': 'ERROR', 'message': 'Group tidak ada'}
+        else:
+            username = username = self.sessions[sessionid]['username']
+            if (username in self.groups[group]['members']):
+                return {'status': 'ERROR', 'message': 'Anda sudah menjadi bagian dari group'}
+            else:
+                self.groups[group]['members'].append(username)
+                return {'status': 'OK', 'message': self.groups[group]}
+            
 
 if __name__=="__main__":
     j = Chat()
