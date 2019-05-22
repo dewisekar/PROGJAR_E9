@@ -6,9 +6,9 @@
 
 ## Tugas 4
 ### Protocol
-Old Protocol:
+#### Old Protocol:
 * Login: auth [username] [password]
 * Send message: send [username-recipient] [message]
 * Inbox: inbox
-New Protocol:
+#### New Protocol
 * Logout: out [username]
