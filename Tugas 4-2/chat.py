@@ -51,6 +51,11 @@ class Chat:
             elif (command == 'list_group'):
                 print "list group"
                 return self.list_group()
+            elif (command =='list_mygroup'):                
+                sessionid = j[1].strip()
+                username = self.sessions[sessionid]['username']
+                print "{}'s group list".format(username)
+                return self.list_mygroup(username)
             else:
                 return {'status' : 'ERROR', 'message' : '**Protocol Tidak Benar'}
         except IndexError:
@@ -117,7 +122,15 @@ class Chat:
         msgs = []
         for k in self.groups:
             msgs.append(self.groups[k]['nama'])
-        return {'status': 'OK', 'messages': msgs}   
+        return {'status': 'OK', 'messages': msgs}  
+    
+    def list_mygroup(self, username):
+        msgs = []         
+        for k in self.groups:
+             if (username in self.groups[k]['members']):
+                 msgs.append(self.groups[k]['nama'])
+        return {'status': 'OK', 'messages': msgs}  
+
 
 if __name__=="__main__":
     j = Chat()

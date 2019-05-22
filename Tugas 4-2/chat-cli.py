@@ -35,6 +35,8 @@ class ChatClient:
                 return self.create_group(group)
             elif (command == 'list_group'):
                 return self.list_group()
+            elif (command == 'list_mygroup'):
+                return self.list_mygroup()
 	    else:
              "*Maaf, command tidak benar"
 	except IndexError:
@@ -103,6 +105,15 @@ class ChatClient:
         if (self.tokenid==""):
             return "Error, not authorized"
         string="list_group {}\r\n" . format(self.tokenid)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "{}" . format(json.dumps(result['messages']))
+        else:
+            return "Error, {}" . format(result['message'])
+    def list_mygroup(self):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="list_mygroup {}\r\n" . format(self.tokenid)
         result = self.sendstring(string)
         if result['status']=='OK':
             return "{}" . format(json.dumps(result['messages']))
