@@ -48,6 +48,9 @@ class Chat:
                 sessionid = j[2].strip()
                 print "creating group {}" . format(group)
                 return self.create_group(group, sessionid)
+            elif (command == 'list_group'):
+                print "list group"
+                return self.list_group()
             else:
                 return {'status' : 'ERROR', 'message' : '**Protocol Tidak Benar'}
         except IndexError:
@@ -108,7 +111,13 @@ class Chat:
             #autojoin
             autolog = self.sessions[sessionid]['username']
             self.groups[group]['members'].append(autolog)
-            return {'status': 'OK', 'message': self.groups[group]}         
+            return {'status': 'OK', 'message': self.groups[group]}
+    
+    def list_group(self):
+        msgs = []
+        for k in self.groups:
+            msgs.append(self.groups[k]['nama'])
+        return {'status': 'OK', 'messages': msgs}   
 
 if __name__=="__main__":
     j = Chat()

@@ -33,10 +33,10 @@ class ChatClient:
             elif (command=='create_group'):
                 group = j[1].strip()
                 return self.create_group(group)
-            elif (command =='list_group'):
+            elif (command == 'list_group'):
                 return self.list_group()
 	    else:
-		return "*Maaf, command tidak benar"
+             "*Maaf, command tidak benar"
 	except IndexError:
 	    return "-Maaf, command tidak benar"
     def sendstring(self,string):
@@ -102,6 +102,12 @@ class ChatClient:
     def list_group(self):
         if (self.tokenid==""):
             return "Error, not authorized"
+        string="list_group {}\r\n" . format(self.tokenid)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "{}" . format(json.dumps(result['messages']))
+        else:
+            return "Error, {}" . format(result['message'])
 if __name__=="__main__":
     cc = ChatClient()
     while True:
