@@ -28,6 +28,26 @@ class ChatClient:
 		return self.sendmessage(usernameto,message)
             elif (command=='inbox'):
                 return self.inbox()
+            elif (command=='logout'):
+                return self.logout()
+            elif(command=='create_group'):
+                group = j[1].strip()
+                return self.create_group(group)
+            elif(command=='join_group'):
+                group = j[1].strip()
+                return self.join_group(group)
+            elif(command=='send_group'):
+                group = j[1].strip()
+                message=""
+                for w in j[2:]:
+                    message="{} {}" . format(message, w)
+                return self.sendmessage_group(group, message)
+            elif(command=='inbox_group'):
+                group = j[1].strip()
+                return self.inbox_group(group)
+            elif(command=='leave_group'):
+                group = j[1].strip()
+                return self.leave_group(group)
 	    else:
 		return "*Maaf, command tidak benar"
 	except IndexError:
@@ -52,6 +72,18 @@ class ChatClient:
             return "username {} logged in, token {} " .format(username,self.tokenid)
         else:
             return "Error, {}" . format(result['message'])
+    def logout(self):
+        if(self.tokenid==""):
+            return "Error, not authorized"
+        string = "logout {} \r\n" . format(self.tokenid) 
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            #print self.tokenid
+            self.tokenid = ""
+            return "Successfully logged out."
+        else:
+            return "500 Internal server error."
+        
     def sendmessage(self,usernameto="xxx",message="xxx"):
         if (self.tokenid==""):
             return "Error, not authorized"
@@ -70,12 +102,14 @@ class ChatClient:
             return "{}" . format(json.dumps(result['messages']))
         else:
             return "Error, {}" . format(result['message'])
-
-
+   
+        return
 
 if __name__=="__main__":
     cc = ChatClient()
     while True:
         cmdline = raw_input("Command {}:" . format(cc.tokenid))
+        if(cmdline == 'exit'):
+            print "Exiting program"
+            break
         print cc.proses(cmdline)
-
