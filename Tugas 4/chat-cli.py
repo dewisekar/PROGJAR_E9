@@ -54,7 +54,11 @@ class ChatClient:
                 return self.inbox_group(group)
             elif (command=='list_members'):
                 group = j[1].strip()
-                return self.list_members(group)            
+                return self.list_members(group)     
+            elif (command=='send_file'):
+                usernameto = j[1].strip()
+                filename = j[2].strip()
+                return self.send_file(usernameto, filename)
 	    else:
              "*Maaf, command tidak benar"
 	except IndexError:
@@ -191,8 +195,27 @@ class ChatClient:
         else:
             return "Error, {}" . format(result['message'])       
     
-        
-        
+    def send_file(self, usernameto, filename):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+
+        string="send_file {} {} {} \r\n" . format(self.tokenid, usernameto, filename)
+        self.sock.sendall(string)
+        try:
+            with open(filename, 'rb') as file:
+                while True:
+                    bytes = file.read(1024)
+                    if not bytes:
+                        result = self.sendstring("DONE")
+                        break
+                    self.sock.sendall(bytes)
+                file.close()
+        except IOError:
+            return "Error, file not found"
+        if result['status']=='OK':
+            return "{} successfully sent to {}" . format(filename,usernameto)
+        else:
+            return "Error, {}" . format(result['message'])             
 
 if __name__=="__main__":
     cc = ChatClient()

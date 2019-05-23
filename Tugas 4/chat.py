@@ -14,7 +14,7 @@ class Chat:
         self.users['lineker'] = { 'nama': 'Gary Lineker', 'negara': 'Inggris', 'password': 'surabaya','incoming': {}, 'outgoing':{}}
         self.users['darke'] = { 'nama': 'Darke Foster', 'negara': 'Canada', 'password': 'prototype', 'incoming' : {}, 'outgoing': {} }
         
-    def proses(self, data):
+    def proses(self, data, connection):
         j = data.split(" ")
         try:
             command = j[0].strip()
@@ -87,7 +87,13 @@ class Chat:
                 username = self.sessions[sessionid]['username']
                 print "Getting group {} members".format(group)
                 return self.list_members(group, username)
-            
+            elif (command == 'send_file'):
+                sessionid = j[1]
+                usernameto = j[2]
+                filename = j[3]
+                usernamefrom = self.sessions[sessionid]['username']
+                print "send_file from {} to {}".format(usernamefrom, usernameto)
+                return self.send_file(sessionid, usernamefrom, usernameto, filename,connection)
             else:
                 return {'status' : 'ERROR', 'message' : '**Protocol Tidak Benar'}
         except IndexError:
@@ -226,6 +232,46 @@ class Chat:
             msgs.append(k)
         return {'status': 'OK', 'messages': msgs}     
     
+    def send_file(self, sessionid, username_from, username_dest, filename, connection):
+        if (sessionid not in self.sessions):
+            return {'status': 'ERROR', 'message': 'Session Tidak Ditemukan'}
+        s_fr = self.get_user(username_from)
+        s_to = self.get_user(username_dest)
+
+        if (s_fr == False or s_to == False):
+            return {'status': 'ERROR', 'message': 'User Tidak Ditemukan'}
+
+        try:
+            if not os.path.exists(username_dest):
+                os.makedirs(username_dest)
+            with open(os.path.join(username_dest, filename), 'wb') as file:
+                while True:
+                    data = connection.recv(1024)
+                    if (data[-4:] == 'DONE'):
+                        data = data[:-4]
+                        file.write(data)
+                        break
+                    file.write(data)
+                file.close()
+        except IOError:
+            raise
+
+        message = {'msg_from': s_fr['nama'], 'msg_to': s_to['nama'], 'msg': 'sent/received {}'.format(filename)}
+        outqueue_sender = s_fr['outgoing']
+        inqueue_receiver = s_to['incoming']
+
+
+        try:
+            outqueue_sender[username_from].put(message)
+        except KeyError:
+            outqueue_sender[username_from] = Queue()
+            outqueue_sender[username_from].put(message)
+        try:
+            inqueue_receiver[username_from].put(message)
+        except KeyError:
+            inqueue_receiver[username_from] = Queue()
+            inqueue_receiver[username_from].put(message)
+        return {'status': 'OK', 'message': 'Message Sent'}
         
         
 if __name__=="__main__":
