@@ -20,3 +20,4 @@
 * Getting group members list: list_members [groupname]
 * Send message to group: send_group [groupname] [message]
 * Inbox of a group: inbox_group [groupname]
+* Send file = send_file [username-destination] [filename]
